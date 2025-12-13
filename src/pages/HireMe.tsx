@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import emailjs from "@emailjs/browser";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,8 +14,14 @@ import {
   Twitter,
   Send,
 } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 import { saveContactMessage } from "@/services/contact.service";
+
+// ✅ UPDATED CREDENTIALS
+const SERVICE_ID = "service_4ml59n4";
+const TEMPLATE_ID = "template_bt1s8ii"; // ✅ Updated with your correct ID
+const PUBLIC_KEY = "RpaTKs-r1cqbLoilR"; 
 
 const HireMe = () => {
   const { toast } = useToast();
@@ -40,45 +48,78 @@ const HireMe = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (isSubmitting) return;
 
-    const form = e.currentTarget; // ✅ store reference safely
+    setIsSubmitting(true);
+    const form = e.currentTarget;
 
     try {
       const formData = new FormData(form);
 
-      const name = String(formData.get("name"));
-      const email = String(formData.get("email"));
-      const message = String(formData.get("message"));
+      const name = String(formData.get("name") || "").trim();
+      const email = String(formData.get("email") || "").trim();
+      const message = String(formData.get("message") || "").trim();
       const service =
         selectedServices.length > 0
           ? selectedServices.join(", ")
           : "Not specified";
 
-      await saveContactMessage(
-        name,
-        email,
-        `${message}\n\nServices Interested: ${service}`
+      // 1. Validate Input
+      if (!name || !email || !message) {
+        toast({
+          title: "Missing fields",
+          description: "Please fill all required fields.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 2. Save to Firebase (Optional)
+      try {
+        await saveContactMessage(
+          name,
+          email,
+          `${message}\n\nServices Interested: ${service}`
+        );
+      } catch (dbError) {
+        console.warn("Firebase save failed, but attempting to send email.", dbError);
+      }
+
+      // 3. Send Email
+      // Note: Ensure your EmailJS template uses these exact variable names: 
+      // {{from_name}}, {{reply_to}}, {{service}}, {{message}}
+      const templateParams = {
+        from_name: name,
+        reply_to: email,
+        service: service,
+        message: message,
+      };
+
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        templateParams,
+        PUBLIC_KEY
       );
 
-      // ✅ SUCCESS TOAST
+      // 4. Success Handling
       toast({
         title: "Message Sent!",
         description: "Thank you for reaching out. I'll contact you soon.",
       });
 
-      // ✅ SAFE RESET (prevents false error)
-      setTimeout(() => {
-        form.reset();
-        setSelectedServices([]);
-      }, 0);
+      form.reset();
+      setSelectedServices([]);
 
-    } catch (error) {
-      console.error("Form UI error:", error);
-
+    } catch (error: any) {
+      console.error("FAILED...", error);
+      
+      const errorText = error.text || error.message || "Unknown error";
+      
       toast({
-        title: "Something went wrong!",
-        description: "But your message was received.",
+        title: "Sending Failed",
+        description: `Error: ${errorText}. Check console for details.`,
         variant: "destructive",
       });
     } finally {
@@ -90,7 +131,6 @@ const HireMe = () => {
     <div className="min-h-screen bg-transparent pt-20 pb-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-20">
 
-        {/* Back Button */}
         <Button
           variant="ghost"
           onClick={() => navigate("/")}
@@ -104,96 +144,59 @@ const HireMe = () => {
 
           {/* LEFT INFO */}
           <div className="bg-gradient-to-br from-primary/90 to-accent/90 rounded-3xl p-6 sm:p-8 lg:p-10 text-white space-y-8 shadow-2xl lg:sticky lg:top-24">
-
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
               Let’s work <br />
               on something <span className="text-black/80">awesome</span>
             </h2>
 
             <div className="space-y-5">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <a href="mailto:parshuramcse@gmail.com" className="hover:underline">
-                  parshuram8792@gmail.com
-                </a>
+              <div className="flex gap-4 items-center">
+                <Mail /> parshuram8792@gmail.com
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <a href="tel:+918792832815" className="hover:underline">
-                  +91 8792 832815
-                </a>
+              <div className="flex gap-4 items-center">
+                <Phone /> +91 8792 832815
               </div>
             </div>
 
             <div className="flex gap-4 pt-4 border-t border-white/20">
-              <a href="https://www.facebook.com/share/15SJ5GW2Da/" target="_blank">
-                <Facebook />
-              </a>
-              <a href="https://www.instagram.com/its_me_parshuram_18" target="_blank">
-                <Instagram />
-              </a>
-              <a href="https://twitter.com" target="_blank">
-                <Twitter />
-              </a>
+              <Facebook />
+              <Instagram />
+              <Twitter />
             </div>
           </div>
 
-          {/* RIGHT FORM */}
+          {/* FORM */}
           <div className="glass rounded-3xl p-6 sm:p-8 md:p-10 border border-white/10">
             <form onSubmit={handleSubmit} className="space-y-8">
 
-              {/* Services */}
               <div>
                 <p className="text-gray-300 mb-3">I'm interested in...</p>
                 <div className="flex flex-wrap gap-3">
-                  {services.map((service) => (
+                  {services.map((s) => (
                     <button
-                      key={service}
+                      key={s}
                       type="button"
-                      onClick={() => toggleService(service)}
+                      onClick={() => toggleService(s)}
                       className={`px-4 py-2 rounded-full text-sm border ${
-                        selectedServices.includes(service)
+                        selectedServices.includes(s)
                           ? "bg-accent text-black border-accent"
-                          : "bg-white/5 text-gray-400 border-white/10 hover:text-white"
+                          : "bg-white/5 text-gray-400 border-white/10"
                       }`}
                     >
-                      {service}
+                      {s}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <Input
-                name="name"
-                required
-                placeholder="Your name"
-                className="h-12 bg-white/5 border-white/10 text-white"
-              />
-
-              <Input
-                name="email"
-                type="email"
-                required
-                placeholder="Your email"
-                className="h-12 bg-white/5 border-white/10 text-white"
-              />
-
-              <Textarea
-                name="message"
-                required
-                placeholder="Tell me about your project..."
-                className="min-h-[140px] bg-white/5 border-white/10 text-white"
-              />
+              <Input name="name" placeholder="Your name" required />
+              <Input name="email" placeholder="Your email" type="email" required />
+              <Textarea name="message" placeholder="Your message" required />
 
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-14 bg-white text-black font-bold"
+                className="w-full h-14 bg-white text-black font-bold disabled:opacity-60"
               >
                 {isSubmitting ? "Sending..." : (
                   <span className="flex items-center gap-2">
