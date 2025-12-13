@@ -25,14 +25,14 @@ const services = [
 
 const Services = () => {
   return (
-    // 1. CHANGE THIS: make section background transparent
-    <section id="services" className="py-20 bg-transparent">
+    // Changed padding for mobile
+    <section id="services" className="py-16 md:py-20 bg-transparent">
       <div className="container mx-auto px-4 sm:px-6 lg:px-20">
-        <h2 className="text-3xl sm:text-4xl font-bold text-accent mb-12">My Services</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold text-accent mb-8 md:mb-12 text-center md:text-left">My Services</h2>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Changed grid to single column on mobile, 2 on tablet, 4 on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (
-            // 2. CHANGE THIS: Use 'glass-card' instead of 'bg-card'
             <div 
               key={index} 
               className="glass-card p-6 rounded-xl hover:transform hover:scale-105 transition-all duration-300 group"
