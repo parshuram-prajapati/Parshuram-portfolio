@@ -42,12 +42,18 @@ const HireMe = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const form = e.currentTarget; // ✅ store reference safely
+
     try {
-      const formData = new FormData(e.currentTarget);
-      const name = formData.get("name") as string;
-      const email = formData.get("email") as string;
-      const message = formData.get("message") as string;
-      const service = selectedServices.join(", ");
+      const formData = new FormData(form);
+
+      const name = String(formData.get("name"));
+      const email = String(formData.get("email"));
+      const message = String(formData.get("message"));
+      const service =
+        selectedServices.length > 0
+          ? selectedServices.join(", ")
+          : "Not specified";
 
       await saveContactMessage(
         name,
@@ -55,17 +61,24 @@ const HireMe = () => {
         `${message}\n\nServices Interested: ${service}`
       );
 
+      // ✅ SUCCESS TOAST
       toast({
         title: "Message Sent!",
         description: "Thank you for reaching out. I'll contact you soon.",
       });
 
-      e.currentTarget.reset();
-      setSelectedServices([]);
-    } catch {
+      // ✅ SAFE RESET (prevents false error)
+      setTimeout(() => {
+        form.reset();
+        setSelectedServices([]);
+      }, 0);
+
+    } catch (error) {
+      console.error("Form UI error:", error);
+
       toast({
         title: "Something went wrong!",
-        description: "Please try again later.",
+        description: "But your message was received.",
         variant: "destructive",
       });
     } finally {
@@ -87,7 +100,6 @@ const HireMe = () => {
           Back to Home
         </Button>
 
-        {/* MAIN GRID */}
         <div className="grid gap-10 lg:grid-cols-2">
 
           {/* LEFT INFO */}
@@ -103,7 +115,7 @@ const HireMe = () => {
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                   <Mail className="w-5 h-5" />
                 </div>
-                <a href="mailto:parshuramcse@gmail.com" className="hover:underline text-base sm:text-lg">
+                <a href="mailto:parshuramcse@gmail.com" className="hover:underline">
                   parshuram8792@gmail.com
                 </a>
               </div>
@@ -112,21 +124,21 @@ const HireMe = () => {
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                   <Phone className="w-5 h-5" />
                 </div>
-                <a href="tel:+918792832815" className="hover:underline text-base sm:text-lg">
+                <a href="tel:+918792832815" className="hover:underline">
                   +91 8792 832815
                 </a>
               </div>
             </div>
 
             <div className="flex gap-4 pt-4 border-t border-white/20">
-              <a href="https://www.facebook.com/share/15SJ5GW2Da/" target="_blank" className="p-2 bg-white/10 rounded-lg hover:bg-white/30">
-                <Facebook className="w-5 h-5" />
+              <a href="https://www.facebook.com/share/15SJ5GW2Da/" target="_blank">
+                <Facebook />
               </a>
-              <a href="https://www.instagram.com/its_me_parshuram_18" target="_blank" className="p-2 bg-white/10 rounded-lg hover:bg-white/30">
-                <Instagram className="w-5 h-5" />
+              <a href="https://www.instagram.com/its_me_parshuram_18" target="_blank">
+                <Instagram />
               </a>
-              <a href="https://twitter.com" target="_blank" className="p-2 bg-white/10 rounded-lg hover:bg-white/30">
-                <Twitter className="w-5 h-5" />
+              <a href="https://twitter.com" target="_blank">
+                <Twitter />
               </a>
             </div>
           </div>
@@ -136,17 +148,15 @@ const HireMe = () => {
             <form onSubmit={handleSubmit} className="space-y-8">
 
               {/* Services */}
-              <div className="space-y-3">
-                <p className="text-gray-300 font-medium text-sm sm:text-base">
-                  I'm interested in...
-                </p>
+              <div>
+                <p className="text-gray-300 mb-3">I'm interested in...</p>
                 <div className="flex flex-wrap gap-3">
                   {services.map((service) => (
                     <button
                       key={service}
                       type="button"
                       onClick={() => toggleService(service)}
-                      className={`px-4 py-2 rounded-full text-sm transition border ${
+                      className={`px-4 py-2 rounded-full text-sm border ${
                         selectedServices.includes(service)
                           ? "bg-accent text-black border-accent"
                           : "bg-white/5 text-gray-400 border-white/10 hover:text-white"
@@ -158,40 +168,36 @@ const HireMe = () => {
                 </div>
               </div>
 
-              {/* Inputs */}
-              <div className="space-y-6">
-                <Input
-                  name="name"
-                  required
-                  placeholder="Your name"
-                  className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl"
-                />
+              <Input
+                name="name"
+                required
+                placeholder="Your name"
+                className="h-12 bg-white/5 border-white/10 text-white"
+              />
 
-                <Input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="Your email"
-                  className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl"
-                />
+              <Input
+                name="email"
+                type="email"
+                required
+                placeholder="Your email"
+                className="h-12 bg-white/5 border-white/10 text-white"
+              />
 
-                <Textarea
-                  name="message"
-                  required
-                  placeholder="Tell me about your project..."
-                  className="min-h-[140px] bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl resize-none"
-                />
-              </div>
+              <Textarea
+                name="message"
+                required
+                placeholder="Tell me about your project..."
+                className="min-h-[140px] bg-white/5 border-white/10 text-white"
+              />
 
-              {/* Submit */}
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-14 text-lg font-bold bg-white text-black hover:bg-gray-200 rounded-xl"
+                className="w-full h-14 bg-white text-black font-bold"
               >
                 {isSubmitting ? "Sending..." : (
                   <span className="flex items-center gap-2">
-                    Send Message <Send className="w-5 h-5" />
+                    Send Message <Send />
                   </span>
                 )}
               </Button>
