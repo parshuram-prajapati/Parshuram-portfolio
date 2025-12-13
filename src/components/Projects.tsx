@@ -10,14 +10,14 @@ const Projects = () => {
       title: "Portfolio Website",
       description: "Modern portfolio with HTML/CSS/JS deployed on GitHub Pages.",
       // CHANGED: Renamed key to liveUrl and guessed your GH Pages link
-      liveUrl: "https://parshuram-prajapati.github.io/basavaraj/", 
+      liveUrl: "https://parshuram-portfolio-6xjk.vercel.app/", 
     },
     {
       image: websiteProject,
       title: "Professional Website",
       description: "Responsive business website with modern design and animations.",
       // CHANGED: Renamed key to liveUrl
-      liveUrl: "https://parshuram-prajapati.github.io/basavaraj/",
+      liveUrl: "https://basavaraj.onrender.com/",
     },
   ];
 
