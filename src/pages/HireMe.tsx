@@ -110,7 +110,7 @@ const HireMe = () => {
                   href="mailto:parshuramcse@gmail.com"
                   className="hover:underline text-lg font-medium"
                 >
-                  parshuramcse@gmail.com
+                  parshuram8792@gmail.com
                 </a>
               </div>
 
