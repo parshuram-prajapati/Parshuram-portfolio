@@ -15,16 +15,20 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ✅ UPDATED NAV LINKS (Certificates added)
   const navLinks = [
     { name: "Home", path: "/#home" },
     { name: "About", path: "/#about" },
     { name: "Services", path: "/#services" },
     { name: "Projects", path: "/#projects" },
+    { name: "Certificates", path: "/#certificates" }, // ✅ ADD THIS
   ];
 
   const scrollToSection = (id: string) => {
     const element = document.querySelector(id);
-    if (element) element.scrollIntoView({ behavior: "smooth" });
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
     setIsMobileMenuOpen(false);
   };
 
@@ -37,6 +41,7 @@ const Header = () => {
         }`}
       >
         <div className="container mx-auto px-4 flex justify-between items-center">
+          
           {/* LOGO */}
           <Link className="text-2xl font-bold" to="/">
             <span className="text-accent">&lt;</span>
@@ -56,17 +61,18 @@ const Header = () => {
                   e.preventDefault();
                   scrollToSection(link.path.replace("/", ""));
                 }}
-                className="hover:text-accent"
+                className="hover:text-accent transition-colors"
               >
                 {link.name}
               </a>
             ))}
+
             <Link to="/hire-me">
               <Button>Hire Me</Button>
             </Link>
           </nav>
 
-          {/* MOBILE BUTTON */}
+          {/* MOBILE MENU BUTTON */}
           <button
             className="md:hidden z-50"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -76,7 +82,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* DARK OVERLAY (NO BLUR) */}
+      {/* MOBILE OVERLAY */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40"
@@ -84,7 +90,7 @@ const Header = () => {
         />
       )}
 
-      {/* MOBILE MENU (BLUR ONLY HERE) */}
+      {/* MOBILE NAV */}
       {isMobileMenuOpen && (
         <div className="fixed top-0 right-0 w-full z-50 md:hidden">
           <div className="glass backdrop-blur-xl bg-black/60 border-b border-white/10">
@@ -97,13 +103,16 @@ const Header = () => {
                     e.preventDefault();
                     scrollToSection(link.path.replace("/", ""));
                   }}
-                  className="text-lg text-white hover:text-accent"
+                  className="text-lg text-white hover:text-accent transition-colors"
                 >
                   {link.name}
                 </a>
               ))}
 
-              <Link to="/hire-me" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                to="/hire-me"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <Button className="w-full text-lg">Hire Me</Button>
               </Link>
             </nav>
