@@ -46,14 +46,15 @@ const Certificates: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-20">
 
         {/* SECTION TITLE */}
-        <div className="text-center mb-14">
-          <h2 className="text-4xl font-bold text-white">
+        <div className="mb-14">
+          <h2 className="text-4xl font-bold text-yellow-400">
             Certifications
           </h2>
-          <p className="text-gray-400 mt-4">
+          <p className="text-gray-400 mt-2">
             Hackathons and certifications I have participated in
           </p>
         </div>
+
 
         {/* CERTIFICATE GRID */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
