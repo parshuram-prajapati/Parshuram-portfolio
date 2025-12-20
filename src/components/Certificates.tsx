@@ -1,26 +1,46 @@
 import { ExternalLink } from "lucide-react";
+import React from "react";
 
 import hackyuvaImg from "@/assets/certificates/hackyuva.png";
 import aiArenaImg from "@/assets/certificates/ai-arena.png";
+import aiLiteracyImg from "@/assets/certificates/image.png";
 
-const certificates = [
+/* -------------------- TYPES -------------------- */
+interface Certificate {
+  title: string;
+  issuer: string;
+  year: string;
+  image: string;
+  link: string;
+}
+
+/* -------------------- DATA -------------------- */
+const certificates: Certificate[] = [
   {
-    title: "Hackvyuha Hackathon Oraganizer",
+    title: "Hackvyuha Hackathon Organizer",
     issuer: "HackYuva",
     year: "2025",
     image: hackyuvaImg,
-    link: "https://drive.google.com/file/d/1xUvXGksGe_N0P8MgCYY7HP0Y0fQzTLlZ/view?usp=drive_link",
+    link: "https://drive.google.com/file/d/1xUvXGksGe_N0P8MgCYY7HP0Y0fQzTLlZ/view",
   },
   {
     title: "AI Arena Hackathon Participation",
     issuer: "AI Arena",
     year: "2025",
     image: aiArenaImg,
-    link: "https://drive.google.com/file/d/1xUvXGksGe_N0P8MgCYY7HP0Y0fQzTLlZ/view?usp=drive_link",
+    link: "https://drive.google.com/file/d/1xUvXGksGe_N0P8MgCYY7HP0Y0fQzTLlZ/view",
+  },
+  {
+    title: "AI Literacy (Earn a Digital Credential)",
+    issuer: "IBM SkillsBuild",
+    year: "2025",
+    image: aiLiteracyImg,
+    link: "https://drive.google.com/file/d/1-p0svBbmqyZotSINraVtljT5ZnjwxRCS/view?usp=sharing",
   },
 ];
 
-const Certificates = () => {
+/* -------------------- COMPONENT -------------------- */
+const Certificates: React.FC = () => {
   return (
     <section id="certificates" className="py-20 bg-transparent">
       <div className="container mx-auto px-4 sm:px-6 lg:px-20">
@@ -49,7 +69,7 @@ const Certificates = () => {
                   alt={cert.title}
                   className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
 
               {/* CONTENT */}
